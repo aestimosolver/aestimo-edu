@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
- Aestimo 1D Schrodinger-Poisson Solver
- Copyright (C) 2013-2014 Sefer Bora Lisesivdin and Aestimo group
+ Aestimo EDU 1D Schrodinger-Poisson Solver
+ Copyright (C) 2013-2020  Aestimo group
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 
     For the list of contributors, see ~/AUTHORS
 
- Description: This is the aestimo calculator conduction band calculations (Classic version). 
+ Description: This is the educational aestimo calculator for conduction band calculations. 
 """
 #from scipy.optimize import fsolve
 import time
@@ -54,7 +54,7 @@ J2meV=1e3/q #Joules to meV
 meV2J=1e-3*q #meV to Joules
 
 time1 = time.time() # timing audit
-print "Aestimo is starting..."
+print ("Aestimo is starting...")
 logger.info("Aestimo is starting...")
 
 # Import from config file
@@ -67,16 +67,16 @@ logger.info("inputfile is %s" %config.inputfilename)
 material = inputfile.material
 totallayer = alen(material)
 
-print "Total layer number: ",totallayer
+print ("Total layer number: ",totallayer)
 logger.info("Total layer number: %s" %totallayer)
 
 comp_scheme = inputfile.computation_scheme
 if comp_scheme in (1,3):
-    print "aestimo doesn't yet include non-parabolicity calculations - try aestimo_numpy instead"
+    print ("aestimo doesn't yet include non-parabolicity calculations - try aestimo_numpy instead")
     logger.error("aestimo doesn't yet include non-parabolicity calculations - try aestimo_numpy instead")
     exit()
 if comp_scheme in (4,5,6):
-    print "aestimo doesn't yet include the exchange interaction calculations - try aestimo_numpy instead"
+    print ("aestimo doesn't yet include the exchange interaction calculations - try aestimo_numpy instead")
     logger.error("aestimo doesn't yet include the exchange interaction calculations - try aestimo_numpy instead")
     exit()
     
@@ -97,7 +97,7 @@ def round2int(x):
 # Calculate the required number of grid points and renormalize dx
 n_max = round2int(x_max/dx)
 if n_max > max_val:
-    print "Grid number is exceeding the max number of ", max_val
+    print ("Grid number is exceeding the max number of ", max_val)
     logger.error("Grid number is exceeding the max number of %d" %max_val)
     exit()
 
@@ -121,7 +121,7 @@ totalmaterial = alen(material_property)
 alloy_property = database.alloyproperty
 totalalloy = alen(alloy_property)
 
-print "Total number of materials in database: ",totalmaterial+totalalloy
+print ("Total number of materials in database: ",totalmaterial+totalalloy)
 logger.info("Total number of materials in database: %d" %(totalmaterial+totalalloy))
 
 # --------------------------------------
@@ -135,28 +135,21 @@ def vegard(first,second,mole):
 # to the energy occurs for psi(+infinity)=0.
 
 # FUNCTIONS for SHOOTING ------------------
-if config.use_cython:
-    #uses a cython accelerate version of the shooting method function below.
-    from psi_at_inf_cython import psi_at_inf
 
-else:
-    
-    def psi_at_inf(E,fis,cb_meff,n_max,dx):
-        """Shooting method for heterostructure as given in Harrison's book"""
-        c0 = 2*(dx/hbar)**2
-        # boundary conditions
-        psi0 = 0.0                 
-        psi1 = 1.0
-        psi2 = None
-        for j in xrange(1,n_max-1,1): # Last potential not used
-            c1=2.0/(cb_meff[j]+cb_meff[j-1])
-            c2=2.0/(cb_meff[j]+cb_meff[j+1])
-            psi2=((c0*(fis[j]-E)+c2+c1)*psi1-c1*psi0)/c2
-            psi0=psi1
-            psi1=psi2
-        return psi2
-    
-
+def psi_at_inf(E,fis,cb_meff,n_max,dx):
+    """Shooting method for heterostructure as given in Harrison's book"""
+    c0 = 2*(dx/hbar)**2
+    # boundary conditions
+    psi0 = 0.0                 
+    psi1 = 1.0
+    psi2 = None
+    for j in range(1,n_max-1,1): # Last potential not used
+        c1=2.0/(cb_meff[j]+cb_meff[j-1])
+        c2=2.0/(cb_meff[j]+cb_meff[j+1])
+        psi2=((c0*(fis[j]-E)+c2+c1)*psi1-c1*psi0)/c2
+        psi0=psi1
+        psi1=psi2
+    return psi2
 
 #nb. function was much slower when fi is a numpy array than a python list.
 def calc_E_state(numlevels,fi,cb_meff,energyx0): # delta_E,d_E
@@ -265,7 +258,7 @@ def fermilevel_0K(Ntotal2d,E_state,meff_state):
         else:
             break #we have found Ef and so we should break out of the loop
     else: #exception clause for 'for' loop.
-        print "Have processed all energy levels present and so can't be sure that Ef is below next higher energy level."
+        print ("Have processed all energy levels present and so can't be sure that Ef is below next higher energy level.")
         logger.warning("Have processed all energy levels present and so can't be sure that Ef is below next higher energy level.")
     N_state=[0.0]*len(E_state)
     for i,(Ei,csb_meff) in enumerate(zip(E_state,meff_state)):
@@ -440,7 +433,7 @@ dop = dop0()
 Ntotal = sum(dop) # calculating total doping density m-3
 Ntotal2d = Ntotal*dx
 #print "Ntotal ",Ntotal,"m**-3"
-print "Ntotal2d ",Ntotal2d," m**-2"
+print ("Ntotal2d ",Ntotal2d," m**-2")
 logger.info("Ntotal2d %g m**-2" %Ntotal2d)
     
 # Applied Field
@@ -466,7 +459,7 @@ else:
 
 while True:
     if not(config.messagesoff) :
-        print "Iteration:",iteration
+        print ("Iteration:",iteration)
         logger.info("Iteration: %d" %iteration)
     if iteration> 1:
         energyx = fi_min
@@ -480,7 +473,7 @@ while True:
     # Envelope Function Wave Functions
     for j in range(0,subnumber_e,1):
         if not(config.messagesoff) :
-            print "Working for subband no:",j+1
+            print ("Working for subband no:",j+1)
             logger.info("Working for subband no: %d"%(j+1))
         wfe[j] = wf(E_state[j]*meV2J,fitot,cb_meff) #wavefunction units dx**0.5
     
@@ -505,21 +498,21 @@ while True:
     #status
     if not(config.messagesoff):
         for i,level in enumerate(E_state):
-            print "E[",i,"]=",level,"meV" #can be written on file.
+            print ("E[",i,"]=",level,"meV") #can be written on file.
             logger.info("E[%d]= %f meV"%(i,level))
         for i,meff in enumerate(meff_state):
-            print 'meff[',i,']= ',meff/m_e
+            print ("meff[",i,"]= ",meff/m_e)
             logger.info("meff[%d]= %f"%(i,meff/m_e))
         for i,Ni in enumerate(N_state):
-            print 'N[',i,']= ',Ni,' m**-2'
+            print ("N[",i,"]= ",Ni," m**-2")
             logger.info("N[%d]= %f m**-2"%(i,Ni))            
         #print 'Efermi (at 0K) = ',E_F_0K,' meV'
         #for i,Ni in enumerate(N_state_0K):
         #    print 'N[',i,']= ',Ni
-        print 'Efermi (at %gK) = ' %T, E_F,' meV'
-        print "total donor charge = ",sum(dop)*dx,"m**-2"
-        print "total level charge = ",sum(N_state),"m**-2"
-        print "total system charge = ",sum(sigma),"m**-2"
+        print ("Efermi (at %gK) = " %T, E_F," meV")
+        print ("total donor charge = ",sum(dop)*dx,"m**-2")
+        print ("total level charge = ",sum(N_state),"m**-2")
+        print ("total system charge = ",sum(sigma),"m**-2")
         logger.info('Efermi (at %gK) = %g meV' %(T, E_F))
         logger.info("total donor charge = %g m**-2" %(sum(dop)*dx))
         logger.info("total level charge = %g m**-2" %(sum(N_state)))
@@ -539,7 +532,7 @@ while True:
     if abs(E_state[0]-previousE0) < convergence_test: #Convergence test
         break
     elif iteration > max_iterations: #Iteration limit
-        print "Have reached maximum number of iterations"
+        print ("Have reached maximum number of iterations")
         logger.warning("Have reached maximum number of iterations")
         break
     else:
@@ -562,14 +555,14 @@ if not os.path.isdir(config.output_directory):
 
 def saveoutput(fname,datatuple,header=None):
     fname2 = os.path.join(config.output_directory,fname)
-    fobj = file(fname2,'wb')
+    fobj = open(fname2,'w+')
     if header: fobj.write(header+'\n')
     np.savetxt(fobj,np.column_stack(datatuple),fmt='%.6e', delimiter=' ')
     fobj.close()
 
 def saveoutput2(fname2,datatuple,header=None,fmt='%.6g',delimiter=', '):
     fname2 = os.path.join(config.output_directory,fname2)
-    fobj = file(fname2,'wb')
+    fobj = open(fname2,'w+')
     if header: fobj.write(header+'\n')
     np.savetxt(fobj,np.column_stack(datatuple),fmt=fmt, delimiter=delimiter)
     fobj.close()
@@ -650,8 +643,8 @@ if config.resultviewer:
     pl.grid(True)
     pl.show()
     
-print "Simulation is finished. All files are closed."
-print "Please control the related files."
+print ("Simulation is finished. All files are closed.")
+print ("Please control the related files.")
 logger.info("""Simulation is finished. All files are closed.Please control the related files.
 -----------------------------------------------------------------""")
 

@@ -1,8 +1,8 @@
-AUTHORs and CONTRIBUTIONS for AESTIMO
+AUTHORs and CONTRIBUTIONS for AESTIMO EDU
 --------------------------------
-Contributors of Aestimo. Names are listed in alphabetic order. Name, Initials, Email, Institution and Country are given, respectively.
+Contributors of Aestimo EDU. Names are listed in alphabetic order. Name, Initials, Email, Institution and Country are given, respectively.
 
-===== Version : Elementary =====
+===== Version : Educational =====
 ==== Committers ====
   * Hamza Hebal, HH, ncmagra54-AT-yahoo.fr, University of Djilali Lyabes Sidi Bel Abes, Algeria
   * Robert Steed, RS, robsteed0-AT-gmail.com

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
- Aestimo 1D Schrodinger-Poisson Solver
- Copyright (C) 2013-2014 Sefer Bora Lisesivdin and Aestimo group
+ Aestimo EDU 1D Schrodinger-Poisson Solver
+ Copyright (C) 2013-2020  Aestimo group
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,14 +31,11 @@ meV2J=1e-3*q #meV to Joules
 # Input File(s)
 # -------------
 #inputfilename = "sample-qw-barrierdope"
-#inputfilename = "sample-qw-qwdope"
+inputfilename = "sample-qw-qwdope"
 #inputfilename = "sample-moddop"
-inputfilename = "sample-double-qw"
 
 # Calculation
 # -----------
-# Aestimo
-use_cython = True #provides a speed up for aestimo
 # Shooting method parameters for Schrödinger Equation solution
 delta_E = 0.5*meV2J #Energy step (Joules) for initial search. Initial delta_E is 1 meV. 
 d_E = 1e-5*meV2J #Energy step (Joules) within Newton-Raphson method when improving the precision of the energy of a found level.
