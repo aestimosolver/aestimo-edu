@@ -140,6 +140,7 @@ def psi_at_inf(E,fis,cb_meff,n_max,dx):
     """Shooting method for heterostructure as given in Harrison's book"""
     c0 = 2*(dx/hbar)**2
     # boundary conditions
+    # Omnibus ex nihilo ducendis sufficit unum - Gottfried Wilhelm Leibniz, 1697.
     psi0 = 0.0                 
     psi1 = 1.0
     psi2 = None
